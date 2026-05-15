@@ -1,41 +1,28 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 
 STUDENT_N = 5
 
-app = FastAPI(title=f"Product Service N{STUDENT_N}")
+app = FastAPI(title=f"Order Service N{STUDENT_N}")
 
-PRODUCTS = {
-    501: {
-        "id": 501,
-        "name": "Laptop Dell",
-        "price": 1200,
-        "stock": 5
-    },
-    502: {
-        "id": 502,
-        "name": "Mouse Logitech",
-        "price": 50,
-        "stock": 20
-    }
-}
+ORDERS = []
 
-@app.get("/products")
-def get_products():
-    return {
+@app.post("/orders")
+def create_order(order: dict):
+    new_order = {
+        "id": len(ORDERS) + 1,
         "student_id": STUDENT_N,
-        "products": list(PRODUCTS.values())
+        "product_id": order["product_id"],
+        "quantity": order["quantity"]
     }
 
-@app.get("/products/{product_id}")
-def get_product(product_id: int):
+    ORDERS.append(new_order)
 
-    if product_id not in PRODUCTS:
-        raise HTTPException(
-            status_code=404,
-            detail="Product not found"
-        )
+    return new_order
 
+
+@app.get("/orders")
+def get_orders():
     return {
         "student_id": STUDENT_N,
-        "product": PRODUCTS[product_id]
+        "orders": ORDERS
     }
